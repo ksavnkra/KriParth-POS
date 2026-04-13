@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import userIcon from "../../assets/userIcon.png";
+import userIcon from "../../assets/Icons/userIcon.png";
 import "./TopBar.css";
 
 const pageNames = {
@@ -27,7 +27,12 @@ export default function TopBar({ onHamburgerClick }) {
       <h1 className="topbar-title">{pageName}</h1>
 
       <div className="topbar-user">
-        <img src={userIcon} alt="user" className="topbar-avatar" draggable="false" />
+        <img
+          src={userIcon}
+          alt="user"
+          className="topbar-avatar"
+          draggable="false"
+        />
         <span className="topbar-username">Username</span>
       </div>
     </div>
