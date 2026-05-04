@@ -1,0 +1,13 @@
+.heading-top {
+  background-color: white;
+  height: 55px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  padding-top: 10px;
+  padding-left: 10px /* padding-bottom: px; */;
+  font-size: x-large;
+}
+.text-small {
+  color: brown;
+  font-size: small;
+  padding-left: 1px;
+}

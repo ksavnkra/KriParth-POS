@@ -1,10 +1,10 @@
 .app-layout {
   display: flex;
+  min-width: 550px;
 }
 
 .main-content {
   margin-left: 250px;
-  padding: 20px;
   width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
@@ -17,7 +17,7 @@
 @media (max-width: 1024px) {
   .main-content {
     margin-left: 0;
-    padding-top: 70px;
+    padding-top: 55px;
   }
 
   .overlay {

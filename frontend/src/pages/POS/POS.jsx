@@ -1,5 +1,10 @@
 import "./POS.css";
+import PageHeader from "../../components/PageHeader/PageHeader";
 
 export default function POS() {
-  return <div className="page-container">POS</div>;
+  return (
+    <div className="POS">
+      <PageHeader title="POS" />
+    </div>
+  );
 }

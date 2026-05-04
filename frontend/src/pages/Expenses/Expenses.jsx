@@ -1,5 +1,10 @@
 import "./Expenses.css";
+import PageHeader from "../../components/PageHeader/PageHeader";
 
 export default function Expenses() {
-  return <div className="page-container">Expenses</div>;
+  return (
+    <div className="Expenses">
+      <PageHeader title="Expenses" />
+    </div>
+  );
 }
