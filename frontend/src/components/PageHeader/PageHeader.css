@@ -1,13 +1,21 @@
-.heading-top {
-  background-color: white;
-  height: 55px;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  padding-top: 10px;
-  padding-left: 10px /* padding-bottom: px; */;
-  font-size: x-large;
+.pg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 0 12px 0;
 }
-.text-small {
-  color: brown;
-  font-size: small;
-  padding-left: 1px;
+
+.pg-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.pg-date {
+  font-size: 14px;
+  color: #999;
+  margin-top: 2px;
+  display: block;
 }

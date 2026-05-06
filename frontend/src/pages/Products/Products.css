@@ -1,5 +1,63 @@
-.Products {
-  background-color: #faf9f7;
-  width: 100%;
-  height: 100%;
+.table-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.prod-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prod-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.prod-icon svg {
+  color: #5cb8a5;
+}
+
+.prod-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.prod-unit {
+  font-size: 12px;
+  color: #999;
+}
+
+.td-bold {
+  font-weight: 600;
+}
+
+.gst-val {
+  color: #5cb8a5;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+@media (max-width: 900px) {
+  .table-card {
+    overflow-x: auto;
+  }
+
+  .tbl {
+    min-width: 700px;
+  }
 }

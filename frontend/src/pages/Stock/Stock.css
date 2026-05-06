@@ -1,5 +1,31 @@
-.Stock {
-  background-color: #faf9f7;
-  width: 100%;
-  height: 100%;
+.cell-primary {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.cell-sub {
+  font-size: 12px;
+  color: #999;
+}
+
+.cell-muted {
+  font-size: 11px;
+  color: #bbb;
+}
+
+.amt-highlight {
+  color: #e67e22;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+@media (max-width: 1100px) {
+  .table-card {
+    overflow-x: auto;
+  }
+
+  .table-card .tbl {
+    min-width: 900px;
+  }
 }
