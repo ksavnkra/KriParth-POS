@@ -1,6 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 
@@ -10,8 +14,13 @@ import Stock from "./pages/Stock/Stock.jsx";
 import Products from "./pages/Products/Products.jsx";
 import Expenses from "./pages/Expenses/Expenses.jsx";
 import Reports from "./pages/Reports/Reports.jsx";
+import Login from "./pages/Login/Login.jsx";
 
 const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login />,
+  },
   {
     path: "/",
     element: <App />,

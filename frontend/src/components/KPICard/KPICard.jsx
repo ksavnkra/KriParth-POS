@@ -4,7 +4,10 @@ export default function KPICard({ label, value, icon, iconBg }) {
   return (
     <div className="stat-card">
       {icon && (
-        <div className="stat-icon" style={{ backgroundColor: iconBg || "#e8f5e9" }}>
+        <div
+          className="stat-icon"
+          style={{ backgroundColor: iconBg || "#e8f5e9" }}
+        >
           {icon}
         </div>
       )}

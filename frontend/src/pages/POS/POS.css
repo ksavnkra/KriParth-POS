@@ -77,7 +77,9 @@
   border-radius: 14px;
   padding: 0;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   overflow: hidden;
   border: 1px solid #f0f0f0;
 }
@@ -98,6 +100,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 28px;
+}
+
+.empty-cart-icon {
+  font-size: 36px;
 }
 
 .item-details {

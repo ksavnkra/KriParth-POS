@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./Reports.css";
 import "../../styles/shared.css";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -5,6 +6,10 @@ import KPICard from "../../components/KPICard/KPICard";
 import Box from "../../components/Box/Box";
 
 export default function Reports() {
+  const today = new Date().toISOString().split("T")[0];
+  const [fromDate, setFromDate] = useState(today);
+  const [toDate, setToDate] = useState(today);
+
   return (
     <div className="page-container">
       <PageHeader title="Reports" />
@@ -13,27 +18,39 @@ export default function Reports() {
           <KPICard
             label="Total Revenue"
             value="₹0"
-            icon={<span>💰</span>}
+            icon="💰"
             iconBg="#e8f5e9"
           />
-          <KPICard
-            label="Total Profit"
-            value="₹0"
-            icon={<span>📈</span>}
-            iconBg="#e3f2fd"
-          />
-          <KPICard
-            label="Items Sold"
-            value="0"
-            icon={<span>📦</span>}
-            iconBg="#fff3e0"
-          />
-          <KPICard
-            label="Transactions"
-            value="0"
-            icon={<span>🧾</span>}
-            iconBg="#f3e5f5"
-          />
+          <KPICard label="Total Profit" value="₹0" icon="📈" iconBg="#e3f2fd" />
+          <KPICard label="Items Sold" value="0" icon="📦" iconBg="#fff3e0" />
+          <KPICard label="Transactions" value="0" icon="🧾" iconBg="#f3e5f5" />
+        </div>
+
+        <div className="date-bar">
+          <div className="date-fields">
+            <div className="date-field">
+              <label htmlFor="from-date">From</label>
+              <input
+                id="from-date"
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+            </div>
+            <div className="date-field">
+              <label htmlFor="to-date">To</label>
+              <input
+                id="to-date"
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="date-actions">
+            <button className="btn-add">Generate Report</button>
+            <button className="btn-print">🖨️ Print</button>
+          </div>
         </div>
 
         <Box title="Revenue Overview" subtitle="Last 30 days">
@@ -64,9 +81,7 @@ export default function Reports() {
           <Box title="Top Selling Products">
             <div className="panel-body">
               <div className="panel-empty">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ddd" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                </svg>
+                <span style={{ fontSize: "28px" }}>📦</span>
                 <span>No sales data yet</span>
               </div>
             </div>
@@ -75,10 +90,7 @@ export default function Reports() {
           <Box title="Sales by Category">
             <div className="panel-body">
               <div className="panel-empty">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ddd" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-                  <path d="M22 12A10 10 0 0 0 12 2v10z" />
-                </svg>
+                <span style={{ fontSize: "28px" }}>📊</span>
                 <span>No category data yet</span>
               </div>
             </div>

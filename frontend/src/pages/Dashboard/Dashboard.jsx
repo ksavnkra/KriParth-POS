@@ -13,25 +13,25 @@ export default function Dashboard() {
           <KPICard
             label="Today's Sales"
             value="₹0"
-            icon={<span>📊</span>}
+            icon="📊"
             iconBg="#e8f5e9"
           />
           <KPICard
             label="Monthly Sales"
             value="₹0"
-            icon={<span>📈</span>}
+            icon="📈"
             iconBg="#e3f2fd"
           />
           <KPICard
             label="Total Products"
             value="0"
-            icon={<span>📦</span>}
+            icon="📦"
             iconBg="#fff3e0"
           />
           <KPICard
             label="Low Stock Items"
             value="0"
-            icon={<span>⚠️</span>}
+            icon="⚠️"
             iconBg="#fce4ec"
           />
         </div>
@@ -74,12 +74,10 @@ export default function Dashboard() {
 
         <Box title="✨ Smart Insights">
           <div className="insights-box">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5cb8a5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4" />
-              <path d="M12 8h.01" />
-            </svg>
-            <span>AI insights will appear here once you start making sales.</span>
+            <span className="info-icon">ℹ</span>
+            <span>
+              AI insights will appear here once you start making sales.
+            </span>
           </div>
         </Box>
       </div>

@@ -6,11 +6,56 @@ import KPICard from "../../components/KPICard/KPICard";
 import Box from "../../components/Box/Box";
 
 const expenseList = [
-  { id: 1, name: "supplies expense", date: "26 Feb 2026", method: "bank", note: "Auto-seeded expense entry", amount: 1916, initial: "S", color: "#e8b4b8" },
-  { id: 2, name: "food expense", date: "26 Feb 2026", method: "bank", note: "Auto-seeded expense entry", amount: 3028, initial: "F", color: "#b4c8e8" },
-  { id: 3, name: "salary expense", date: "26 Feb 2026", method: "cash", note: "Auto-seeded expense entry", amount: 3494, initial: "S", color: "#d4b8e8" },
-  { id: 4, name: "rent expense", date: "26 Feb 2026", method: "bank", note: "Auto-seeded expense entry", amount: 8500, initial: "R", color: "#b8e8c8" },
-  { id: 5, name: "utilities expense", date: "26 Feb 2026", method: "cash", note: "Auto-seeded expense entry", amount: 2150, initial: "U", color: "#e8d4b4" },
+  {
+    id: 1,
+    name: "supplies expense",
+    date: "26 Feb 2026",
+    method: "bank",
+    note: "Auto-seeded expense entry",
+    amount: 1916,
+    initial: "S",
+    color: "#e8b4b8",
+  },
+  {
+    id: 2,
+    name: "food expense",
+    date: "26 Feb 2026",
+    method: "bank",
+    note: "Auto-seeded expense entry",
+    amount: 3028,
+    initial: "F",
+    color: "#b4c8e8",
+  },
+  {
+    id: 3,
+    name: "salary expense",
+    date: "26 Feb 2026",
+    method: "cash",
+    note: "Auto-seeded expense entry",
+    amount: 3494,
+    initial: "S",
+    color: "#d4b8e8",
+  },
+  {
+    id: 4,
+    name: "rent expense",
+    date: "26 Feb 2026",
+    method: "bank",
+    note: "Auto-seeded expense entry",
+    amount: 8500,
+    initial: "R",
+    color: "#b8e8c8",
+  },
+  {
+    id: 5,
+    name: "utilities expense",
+    date: "26 Feb 2026",
+    method: "cash",
+    note: "Auto-seeded expense entry",
+    amount: 2150,
+    initial: "U",
+    color: "#e8d4b4",
+  },
 ];
 
 export default function Expenses() {
@@ -24,19 +69,19 @@ export default function Expenses() {
           <KPICard
             label="Today's Expenses"
             value="₹0"
-            icon={<span>📅</span>}
+            icon="📅"
             iconBg="#fde8e8"
           />
           <KPICard
             label="Monthly Expenses"
             value="₹0"
-            icon={<span>📊</span>}
+            icon="📊"
             iconBg="#e8f5e9"
           />
           <KPICard
             label="Top Category"
             value="N/A"
-            icon={<span>📉</span>}
+            icon="📉"
             iconBg="#f3e5f5"
           />
         </div>
@@ -67,9 +112,7 @@ export default function Expenses() {
         </Box>
 
         <Box title="Expense Breakdown">
-          <div className="breakdown-empty">
-            No expense breakdown data yet
-          </div>
+          <div className="breakdown-empty">No expense breakdown data yet</div>
         </Box>
 
         <div className="toolbar">
@@ -88,39 +131,33 @@ export default function Expenses() {
               <option>Utilities</option>
             </select>
           </div>
-          <button className="btn-add">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Add Expense
-          </button>
+          <button className="btn-add">+ Add Expense</button>
         </div>
 
         <div className="exp-list">
-          {expenseList.map((expense) => (
-            <div key={expense.id} className="exp-row">
+          {expenseList.map((e) => (
+            <div key={e.id} className="exp-row">
               <div className="exp-left">
                 <div
                   className="exp-avatar"
-                  style={{ backgroundColor: expense.color }}
+                  style={{ backgroundColor: e.color }}
                 >
-                  {expense.initial}
+                  {e.initial}
                 </div>
                 <div className="exp-info">
-                  <span className="exp-name">{expense.name}</span>
+                  <span className="exp-name">{e.name}</span>
                   <span className="exp-meta">
-                    {expense.date} · {expense.method} · {expense.note}
+                    {e.date} · {e.method} · {e.note}
                   </span>
                 </div>
               </div>
               <div className="exp-right">
-                <span className="exp-amount">₹{expense.amount.toLocaleString()}</span>
-                <button className="icon-btn icon-btn-danger" aria-label="Delete expense">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
+                <span className="exp-amount">₹{e.amount.toLocaleString()}</span>
+                <button
+                  className="icon-btn icon-btn-danger"
+                  aria-label="Delete"
+                >
+                  🗑️
                 </button>
               </div>
             </div>
