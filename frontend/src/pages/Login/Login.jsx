@@ -4,8 +4,6 @@ import { Eye, EyeOff, LogIn } from "lucide-react";
 import FloatingLines from "../../components/FloatingLines/FloatingLines";
 import "./Login.css";
 
-/* Stable references — kept outside the component so they never
-   trigger FloatingLines' useEffect on re-render. */
 const BG_GRADIENT = ["#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4"];
 const BG_WAVES = ["top", "middle", "bottom"];
 const BG_LINE_COUNT = [8, 6, 10];
@@ -30,7 +28,6 @@ export default function Login() {
 
     setLoading(true);
 
-    // Simulate login — replace with real API call
     setTimeout(() => {
       setLoading(false);
       navigate("/dashboard");
@@ -39,7 +36,6 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      {/* Floating lines shader background */}
       <div className="login-bg">
         <FloatingLines
           linesGradient={BG_GRADIENT}
@@ -54,16 +50,12 @@ export default function Login() {
         />
       </div>
 
-      {/* Noise overlay for texture */}
       <div className="login-noise" />
 
-      {/* Glass card */}
       <div className="login-card-wrapper">
         <div className="login-card">
-          {/* Reflective highlight on glass */}
           <div className="login-card-highlight" />
 
-          {/* Branding */}
           <div className="login-brand">
             <img
               src="/logoWithText.png"
@@ -72,7 +64,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Form */}
           <form className="login-form" onSubmit={handleSubmit} id="login-form">
             <div className="login-field">
               <label htmlFor="login-email" className="login-label">
@@ -140,7 +131,6 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Footer */}
           <p className="login-footer">
             Secure access for authorized personnel only.
           </p>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./POS.css";
 import "../../styles/shared.css";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -15,114 +15,31 @@ const categories = [
 ];
 
 const products = [
-  {
-    id: 1,
-    name: "TakaTak",
-    price: 25,
-    stock: 1017,
-    gst: 18,
-    category: "Chips",
-  },
-  {
-    id: 2,
-    name: "Chocolate Bar",
-    price: 50,
-    stock: 83,
-    gst: 18,
-    category: "Snacks",
-  },
-  {
-    id: 3,
-    name: "Cold Drink (500ml)",
-    price: 40,
-    stock: 80,
-    gst: 28,
-    category: "Beverages",
-  },
-  {
-    id: 4,
-    name: "Mineral Water (1L)",
-    price: 20,
-    stock: 200,
-    gst: 18,
-    category: "Beverages",
-  },
-  {
-    id: 5,
-    name: "Pen Set (10 pcs)",
-    price: 120,
-    stock: 50,
-    gst: 12,
-    category: "Stationery",
-  },
-  {
-    id: 6,
-    name: "Notebook (200 pages)",
-    price: 60,
-    stock: 100,
-    gst: 12,
-    category: "Stationery",
-  },
-  {
-    id: 7,
-    name: "Sports Shoes",
-    price: 1999,
-    stock: 0,
-    gst: 12,
-    category: "Clothing",
-  },
-  {
-    id: 8,
-    name: "Denim Jeans",
-    price: 1299,
-    stock: 20,
-    gst: 12,
-    category: "Clothing",
-  },
-  {
-    id: 9,
-    name: "Cotton T-Shirt",
-    price: 499,
-    stock: 30,
-    gst: 12,
-    category: "Clothing",
-  },
-  {
-    id: 10,
-    name: "LED Bulb 9W",
-    price: 120,
-    stock: 60,
-    gst: 18,
-    category: "Electronics",
-  },
-  {
-    id: 11,
-    name: "Extension Board 4-Way",
-    price: 450,
-    stock: 20,
-    gst: 18,
-    category: "Electronics",
-  },
-  {
-    id: 12,
-    name: "Basmati Rice (5kg)",
-    price: 450,
-    stock: 50,
-    gst: 5,
-    category: "Groceries",
-  },
+  { id: 1, name: "TakaTak", price: 25, stock: 1017, gst: 18, category: "Chips" },
+  { id: 2, name: "Chocolate Bar", price: 50, stock: 83, gst: 18, category: "Snacks" },
+  { id: 3, name: "Cold Drink (500ml)", price: 40, stock: 80, gst: 28, category: "Beverages" },
+  { id: 4, name: "Mineral Water (1L)", price: 20, stock: 200, gst: 18, category: "Beverages" },
+  { id: 5, name: "Pen Set (10 pcs)", price: 120, stock: 50, gst: 12, category: "Stationery" },
+  { id: 6, name: "Notebook (200 pages)", price: 60, stock: 100, gst: 12, category: "Stationery" },
+  { id: 7, name: "Sports Shoes", price: 1999, stock: 0, gst: 12, category: "Clothing" },
+  { id: 8, name: "Denim Jeans", price: 1299, stock: 20, gst: 12, category: "Clothing" },
+  { id: 9, name: "Cotton T-Shirt", price: 499, stock: 30, gst: 12, category: "Clothing" },
+  { id: 10, name: "LED Bulb 9W", price: 120, stock: 60, gst: 18, category: "Electronics" },
+  { id: 11, name: "Extension Board 4-Way", price: 450, stock: 20, gst: 18, category: "Electronics" },
+  { id: 12, name: "Basmati Rice (5kg)", price: 450, stock: 50, gst: 5, category: "Groceries" },
 ];
 
 export default function POS() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [cart, setCart] = useState([]);
+  const [editingQty, setEditingQty] = useState(null);
+  const [editingValue, setEditingValue] = useState("");
+  const qtyEditRef = useRef(null);
 
   const filtered = products.filter((p) => {
     const matchCat = activeCategory === "All" || p.category === activeCategory;
-    const matchSearch = p.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });
 
@@ -131,6 +48,7 @@ export default function POS() {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
+        if (existing.qty >= product.stock) return prev;
         return prev.map((item) =>
           item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
         );
@@ -139,8 +57,41 @@ export default function POS() {
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
+  const updateCartQty = (productId, delta) => {
+    setCart((prev) =>
+      prev
+        .map((item) => {
+          if (item.id !== productId) return item;
+          const newQty = Math.min(item.qty + delta, item.stock);
+          return { ...item, qty: newQty };
+        })
+        .filter((item) => item.qty > 0),
+    );
+  };
+
+  const setCartQty = (productId, newQty) => {
+    if (!newQty || newQty < 1) {
+      setCart((prev) => prev.filter((item) => item.id !== productId));
+    } else {
+      setCart((prev) =>
+        prev.map((item) => {
+          if (item.id !== productId) return item;
+          return { ...item, qty: Math.min(newQty, item.stock) };
+        }),
+      );
+    }
+    setEditingQty(null);
+  };
+
+  const startEditing = (itemId, currentQty) => {
+    setEditingQty(itemId);
+    setEditingValue(String(currentQty));
+    setTimeout(() => {
+      if (qtyEditRef.current) {
+        qtyEditRef.current.focus();
+        qtyEditRef.current.select();
+      }
+    }, 0);
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -225,21 +176,52 @@ export default function POS() {
                 <div key={item.id} className="order-line">
                   <div className="order-line-info">
                     <span className="order-line-name">{item.name}</span>
-                    <span className="order-line-qty">
-                      {item.qty} × ₹{item.price}
-                    </span>
+                    <span className="order-line-price">₹{item.price} each</span>
                   </div>
-                  <div className="order-line-actions">
-                    <span className="order-line-total">
-                      ₹{item.qty * item.price}
-                    </span>
+                  <div className="order-line-controls">
                     <button
-                      className="icon-btn icon-btn-danger"
-                      onClick={() => removeFromCart(item.id)}
+                      className="qty-adj-btn"
+                      onClick={() => updateCartQty(item.id, -1)}
                     >
-                      ✕
+                      −
+                    </button>
+                    {editingQty === item.id ? (
+                      <input
+                        ref={qtyEditRef}
+                        type="number"
+                        className="order-line-qty-input"
+                        min="0"
+                        value={editingValue}
+                        onChange={(e) =>
+                          setEditingValue(e.target.value.replace(/[^0-9]/g, ""))
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter")
+                            setCartQty(item.id, parseInt(editingValue, 10));
+                          if (e.key === "Escape") setEditingQty(null);
+                        }}
+                        onBlur={() =>
+                          setCartQty(item.id, parseInt(editingValue, 10))
+                        }
+                      />
+                    ) : (
+                      <span
+                        className="order-line-qty-value"
+                        onClick={() => startEditing(item.id, item.qty)}
+                      >
+                        {item.qty}
+                      </span>
+                    )}
+                    <button
+                      className="qty-adj-btn"
+                      onClick={() => updateCartQty(item.id, 1)}
+                    >
+                      +
                     </button>
                   </div>
+                  <span className="order-line-total">
+                    ₹{item.qty * item.price}
+                  </span>
                 </div>
               ))
             )}
@@ -258,7 +240,12 @@ export default function POS() {
               <span>Total</span>
               <span>₹{Math.round(total)}</span>
             </div>
-            <button className="checkout-btn">Checkout</button>
+            <button
+              className={`checkout-btn ${cart.length > 0 ? "checkout-btn-active" : ""}`}
+              id="checkout-btn"
+            >
+              Checkout
+            </button>
           </div>
         </div>
       </div>

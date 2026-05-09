@@ -1,5 +1,3 @@
-/* ─── Login Page ──────────────────────────────────────── */
-
 .login-page {
   position: relative;
   width: 100vw;
@@ -11,15 +9,11 @@
   background: #050510;
 }
 
-/* ── Shader background ────────────────────────────────── */
-
 .login-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
-
-/* ── Noise texture overlay ────────────────────────────── */
 
 .login-noise {
   position: absolute;
@@ -31,8 +25,6 @@
   background-repeat: repeat;
   background-size: 128px 128px;
 }
-
-/* ── Card wrapper (centering + entrance animation) ───── */
 
 .login-card-wrapper {
   position: relative;
@@ -53,8 +45,6 @@
   }
 }
 
-/* ── Liquid Glass Card ────────────────────────────────── */
-
 .login-card {
   position: relative;
   width: 400px;
@@ -62,8 +52,6 @@
   padding: 44px 40px 36px;
   border-radius: 28px;
   overflow: hidden;
-
-  /* Liquid glass */
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.08) 0%,
@@ -72,8 +60,6 @@
   );
   backdrop-filter: blur(40px) saturate(1.6);
   -webkit-backdrop-filter: blur(40px) saturate(1.6);
-
-  /* Glass border */
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.05) inset,
@@ -82,7 +68,6 @@
     0 0 80px -20px rgba(139, 92, 246, 0.15);
 }
 
-/* Reflective highlight streak across top of glass */
 .login-card-highlight {
   position: absolute;
   top: 0;
@@ -97,8 +82,6 @@
   pointer-events: none;
   border-radius: 28px 28px 50% 50%;
 }
-
-/* ── Branding ─────────────────────────────────────────── */
 
 .login-brand {
   text-align: center;
@@ -116,8 +99,6 @@
     drop-shadow(0 0 40px rgba(139, 92, 246, 0.15));
   align-items: center;
 }
-
-/* ── Form ─────────────────────────────────────────────── */
 
 .login-form {
   display: flex;
@@ -152,7 +133,6 @@
     border-color 0.25s ease,
     box-shadow 0.25s ease,
     background 0.25s ease;
-
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -171,7 +151,6 @@
     0 0 20px -4px rgba(139, 92, 246, 0.15);
 }
 
-/* Password field with eye toggle */
 .login-input-group {
   position: relative;
 }
@@ -204,8 +183,6 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* ── Error ────────────────────────────────────────────── */
-
 .login-error {
   font-size: 13px;
   color: #f87171;
@@ -215,8 +192,6 @@
   background: rgba(248, 113, 113, 0.08);
   border: 1px solid rgba(248, 113, 113, 0.15);
 }
-
-/* ── Submit button ────────────────────────────────────── */
 
 .login-btn {
   display: flex;
@@ -237,7 +212,6 @@
     transform 0.2s ease,
     box-shadow 0.2s ease,
     filter 0.2s ease;
-
   background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
   background-size: 200% 200%;
   animation: login-btn-gradient 4s ease infinite;
@@ -274,8 +248,6 @@
   opacity: 0.7;
 }
 
-/* ── Loading spinner ──────────────────────────────────── */
-
 .login-spinner {
   width: 22px;
   height: 22px;
@@ -291,8 +263,6 @@
   }
 }
 
-/* ── Footer ───────────────────────────────────────────── */
-
 .login-footer {
   text-align: center;
   font-size: 11.5px;
@@ -301,22 +271,10 @@
   letter-spacing: 0.3px;
 }
 
-/* ── Responsive ───────────────────────────────────────── */
-
 @media (max-width: 480px) {
   .login-card {
     padding: 32px 24px 28px;
     border-radius: 22px;
-  }
-
-  .login-brand-title {
-    font-size: 22px;
-  }
-
-  .login-brand-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
   }
 
   .login-input {
