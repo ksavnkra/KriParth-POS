@@ -17,7 +17,6 @@ const expenseRoutes = require("./routes/expenses");
 const usersRoutes = require("./routes/users");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
