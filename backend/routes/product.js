@@ -7,6 +7,6 @@ router.get("/", getProducts);
 router.get("/:id", getProduct);
 router.post("/", verifyToken, authorize("admin", "manager"), createProduct);
 router.put("/:id", verifyToken, authorize("admin", "manager"), updateProduct);
-router.delete("/:id", verifyToken, authorize("admin"), deleteProduct);
+router.delete("/:id", verifyToken, authorize("admin", "manager"), deleteProduct);
 
 module.exports = router;

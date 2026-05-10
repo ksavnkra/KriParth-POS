@@ -6,6 +6,7 @@ const ExpenseSchema = new mongoose.Schema(
     amount: { type: Number, required: true },
     method: { type: String, enum: ["cash", "bank", "upi", "card"], default: "cash" },
     note: { type: String, default: "" },
+    category: { type: String, default: "Uncategorized", trim: true },
     incurredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     date: { type: Date, default: Date.now },
   },

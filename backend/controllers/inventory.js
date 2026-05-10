@@ -103,16 +103,26 @@ const adjustStock = async (req, res) => {
 // GET /api/v1/inventory/logs — inventory change history
 const getInventoryLogs = async (req, res) => {
   try {
-    const { product, type, page = 1, limit = 30 } = req.query;
+    const { product, type, startDate, endDate, page = 1, limit = 30 } = req.query;
     const filter = {};
 
     if (product) filter.product = product;
     if (type) filter.type = type;
 
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const ed = new Date(endDate);
+        ed.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = ed;
+      }
+    }
+
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const total = await InventoryLog.countDocuments(filter);
     const logs = await InventoryLog.find(filter)
-      .populate("product", "name sku")
+      .populate("product", "name sku isActive")
       .populate("performedBy", "name")
       .sort({ createdAt: -1 })
       .skip(skip)

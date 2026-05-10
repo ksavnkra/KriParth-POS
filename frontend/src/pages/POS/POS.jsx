@@ -1,41 +1,70 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import API from "../../services/api";
 import "./POS.css";
 import "../../styles/shared.css";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-const categories = [
-  "All",
-  "Beverages",
-  "Chips",
-  "Clothing",
-  "Electronics",
-  "Groceries",
-  "Snacks",
-  "Stationery",
-];
-
-const products = [
-  { id: 1, name: "TakaTak", price: 25, stock: 1017, gst: 18, category: "Chips" },
-  { id: 2, name: "Chocolate Bar", price: 50, stock: 83, gst: 18, category: "Snacks" },
-  { id: 3, name: "Cold Drink (500ml)", price: 40, stock: 80, gst: 28, category: "Beverages" },
-  { id: 4, name: "Mineral Water (1L)", price: 20, stock: 200, gst: 18, category: "Beverages" },
-  { id: 5, name: "Pen Set (10 pcs)", price: 120, stock: 50, gst: 12, category: "Stationery" },
-  { id: 6, name: "Notebook (200 pages)", price: 60, stock: 100, gst: 12, category: "Stationery" },
-  { id: 7, name: "Sports Shoes", price: 1999, stock: 0, gst: 12, category: "Clothing" },
-  { id: 8, name: "Denim Jeans", price: 1299, stock: 20, gst: 12, category: "Clothing" },
-  { id: 9, name: "Cotton T-Shirt", price: 499, stock: 30, gst: 12, category: "Clothing" },
-  { id: 10, name: "LED Bulb 9W", price: 120, stock: 60, gst: 18, category: "Electronics" },
-  { id: 11, name: "Extension Board 4-Way", price: 450, stock: 20, gst: 18, category: "Electronics" },
-  { id: 12, name: "Basmati Rice (5kg)", price: 450, stock: 50, gst: 5, category: "Groceries" },
-];
-
 export default function POS() {
+  const [categories, setCategories] = useState(["All"]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [editingQty, setEditingQty] = useState(null);
   const [editingValue, setEditingValue] = useState("");
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [paymentMode, setPaymentMode] = useState("cash");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [checkoutMsg, setCheckoutMsg] = useState("");
+  const [splitAmounts, setSplitAmounts] = useState({ cash: 0, card: 0, upi: 0 });
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const qtyEditRef = useRef(null);
+
+  const handleSplitChange = (field, val) => {
+    const roundedTotal = Math.round(total);
+    const othersSum = Object.keys(splitAmounts)
+      .filter(k => k !== field)
+      .reduce((s, k) => s + splitAmounts[k], 0);
+    
+    const maxAllowed = Math.max(0, roundedTotal - othersSum);
+    const finalVal = Math.min(Number(val), maxAllowed);
+    
+    setSplitAmounts(prev => ({ ...prev, [field]: finalVal }));
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await API.get("/products", { params: { limit: 100 } });
+      const prods = res.data.data.map((p) => ({
+        id: p._id,
+        name: p.name,
+        price: p.price,
+        stock: p.stock,
+        gst: 18,
+        category: p.category?.name || "Uncategorized",
+        sku: p.sku,
+      }));
+      setProducts(prods);
+    } catch (err) {
+      console.error("Failed to load products:", err);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await API.get("/categories");
+      const catNames = res.data.data.map((c) => c.name);
+      setCategories(["All", ...catNames]);
+    } catch (err) {
+      console.error("Failed to load categories:", err);
+    }
+  };
 
   const filtered = products.filter((p) => {
     const matchCat = activeCategory === "All" || p.category === activeCategory;
@@ -94,12 +123,65 @@ export default function POS() {
     }, 0);
   };
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const gstTotal = cart.reduce(
-    (sum, item) => sum + (item.price * item.qty * item.gst) / 100,
-    0,
+  // Inclusive Tax Math
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const netSubtotal = cart.reduce(
+    (sum, item) => sum + (item.price * item.qty) / (1 + (item.gst || 0) / 100),
+    0
   );
-  const total = subtotal + gstTotal;
+  const gstTotal = total - netSubtotal;
+  // Keep old variable name map for compatibility with form bindings below:
+  const subtotal = netSubtotal; 
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+    setCheckingOut(true);
+    setCheckoutMsg("");
+
+    try {
+      // prepare payment details
+      let paymentDetails = { cashAmount: 0, cardAmount: 0, upiAmount: 0, transactionId: "" };
+      let pmode = paymentMode;
+
+      if (paymentMode === 'split') {
+        const sum = splitAmounts.cash + splitAmounts.card + splitAmounts.upi;
+        const roundedT = Math.round(total);
+        if (Math.abs(sum - roundedT) > 0.5) {
+          setCheckoutMsg(`Split total (₹${sum}) must match bill total (₹${roundedT})`);
+          setCheckingOut(false);
+          return;
+        }
+        paymentDetails = { cashAmount: splitAmounts.cash, cardAmount: splitAmounts.card, upiAmount: splitAmounts.upi, transactionId: '' };
+        pmode = 'split';
+      } else {
+        paymentDetails = { cashAmount: paymentMode === 'cash' ? Math.round(total) : 0, cardAmount: paymentMode === 'card' ? Math.round(total) : 0, upiAmount: paymentMode === 'upi' ? Math.round(total) : 0, transactionId: '' };
+      }
+
+      const salePayload = {
+        items: cart.map((item) => ({ product: item.id, quantity: item.qty, discount: 0 })),
+        taxRate: 18,
+        paymentMode: pmode,
+        discount: 0,
+        paymentDetails,
+        customerName,
+        customerPhone,
+      };
+
+      const res = await API.post("/sales", salePayload);
+      const inv = res.data.data.invoiceNumber;
+      setCheckoutMsg(`Sale completed! Invoice: ${inv}`);
+      setCart([]);
+      setShowPaymentModal(false);
+      fetchProducts();
+
+      setTimeout(() => setCheckoutMsg(""), 4000);
+    } catch (err) {
+      const msg = err.response?.data?.error?.message || "Checkout failed";
+      setCheckoutMsg(msg);
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   return (
     <div className="page-container billing-page">
@@ -131,6 +213,11 @@ export default function POS() {
           </div>
 
           <div className="item-grid">
+            {filtered.length === 0 && (
+              <div className="no-data" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px 0" }}>
+                {products.length === 0 ? "No products found. Add products first." : "No matching products."}
+              </div>
+            )}
             {filtered.map((product) => (
               <div
                 key={product.id}
@@ -230,25 +317,121 @@ export default function POS() {
           <div className="order-summary">
             <div className="summary-row">
               <span>Subtotal</span>
-              <span>₹{subtotal}</span>
-            </div>
-            <div className="summary-row">
-              <span>GST</span>
-              <span>₹{Math.round(gstTotal)}</span>
-            </div>
-            <div className="summary-row summary-total">
-              <span>Total</span>
               <span>₹{Math.round(total)}</span>
             </div>
+            <div className="summary-row" style={{ fontSize: '13px', opacity: 0.8 }}>
+              <span>(Incl. Tax Estimate)</span>
+              <span>₹{Math.round(gstTotal)}</span>
+            </div>
+            <div className="summary-row summary-total" style={{ borderTop: '2px solid #eee', paddingTop: '10px', marginTop: '5px' }}>
+              <span>Total Payable</span>
+              <span>₹{Math.round(total)}</span>
+            </div>
+
+            {checkoutMsg && (
+              <p className={`checkout-msg ${checkoutMsg.includes("completed") ? "checkout-success" : "checkout-error"}`}>
+                {checkoutMsg}
+              </p>
+            )}
+
             <button
               className={`checkout-btn ${cart.length > 0 ? "checkout-btn-active" : ""}`}
               id="checkout-btn"
+              onClick={() => cart.length > 0 && setShowPaymentModal(true)}
+              disabled={cart.length === 0}
             >
               Checkout
             </button>
           </div>
         </div>
       </div>
+
+      {showPaymentModal && (
+        <div className="modal-overlay" onClick={() => setShowPaymentModal(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Complete Payment</h3>
+            <div className="modal-total">
+              <span>Total Amount</span>
+              <span className="modal-total-value">₹{Math.round(total)}</span>
+            </div>
+            <div className="payment-options">
+              {["cash", "upi", "card"].map((mode) => (
+                <button
+                  key={mode}
+                  className={`payment-option ${paymentMode === mode ? "payment-selected" : ""}`}
+                  onClick={() => setPaymentMode(mode)}
+                >
+                  {mode === "cash" && "💵"} {mode === "upi" && "📱"} {mode === "card" && "💳"}
+                  {" "}{mode.toUpperCase()}
+                </button>
+              ))}
+
+              <button
+                className={`payment-option ${paymentMode === 'split' ? 'payment-selected' : ''}`}
+                onClick={() => setPaymentMode('split')}
+              >
+                🔀 Split
+              </button>
+            </div>
+
+            {paymentMode === 'split' && (
+              <div className="split-payment-container">
+                <div className="split-payment-row">
+                  <label className="split-payment-label">Cash</label>
+                  <input className="split-payment-input" type="number" min="0" placeholder="0" value={splitAmounts.cash || ''} onChange={(e) => handleSplitChange('cash', e.target.value)} />
+                </div>
+                <div className="split-payment-row">
+                  <label className="split-payment-label">Card</label>
+                  <input className="split-payment-input" type="number" min="0" placeholder="0" value={splitAmounts.card || ''} onChange={(e) => handleSplitChange('card', e.target.value)} />
+                </div>
+                <div className="split-payment-row">
+                  <label className="split-payment-label">UPI</label>
+                  <input className="split-payment-input" type="number" min="0" placeholder="0" value={splitAmounts.upi || ''} onChange={(e) => handleSplitChange('upi', e.target.value)} />
+                </div>
+                <div className="split-payment-total">
+                  Total Entered: <span style={{ color: Math.abs((splitAmounts.cash + splitAmounts.card + splitAmounts.upi) - total) < 0.5 ? '#27ae60' : '#e74c3c' }}>
+                    ₹{(splitAmounts.cash + splitAmounts.card + splitAmounts.upi).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="customer-details-row">
+              <div className="customer-field-wrap">
+                <label className="customer-field-label">Customer Name</label>
+                <input 
+                  className="customer-field-input" 
+                  placeholder="Walk-in / Optional"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
+              <div className="customer-field-wrap">
+                <label className="customer-field-label">Phone / Number</label>
+                <input 
+                  className="customer-field-input" 
+                  placeholder="98765xxxxx"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button className="modal-cancel" onClick={() => setShowPaymentModal(false)}>
+                Cancel
+              </button>
+              <button
+                className="modal-confirm"
+                onClick={handleCheckout}
+                disabled={checkingOut}
+              >
+                {checkingOut ? "Processing..." : "Confirm Payment"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

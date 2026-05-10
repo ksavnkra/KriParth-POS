@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import userIcon from "../../assets/Icons/userIcon.png";
 import "./TopBar.css";
 
@@ -13,6 +14,7 @@ const pageNames = {
 
 export default function TopBar({ onHamburgerClick }) {
   const location = useLocation();
+  const { user } = useAuth();
   const currentPage = location.pathname.replace("/", "") || "dashboard";
   const pageName = pageNames[currentPage] || "Dashboard";
 
@@ -33,7 +35,7 @@ export default function TopBar({ onHamburgerClick }) {
           className="topbar-avatar"
           draggable="false"
         />
-        <span className="topbar-username">Username</span>
+        <span className="topbar-username">{user?.name || "User"}</span>
       </div>
     </div>
   );

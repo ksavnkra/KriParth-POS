@@ -72,10 +72,10 @@ const createProduct = async (req, res) => {
   try {
     const { name, sku, description, price, costPrice, stock, lowStockThreshold, unit, image, category } = req.body;
 
-    if (!name || !sku || !price || !costPrice) {
+    if (!name || !sku) {
       return res.status(400).json({
         success: false,
-        error: { code: "VALIDATION_ERROR", message: "Name, SKU, price and costPrice are required." },
+        error: { code: "VALIDATION_ERROR", message: "Name and SKU are required." },
       });
     }
 
@@ -93,13 +93,12 @@ const createProduct = async (req, res) => {
       name,
       sku: normalizedSku,
       description: description || "",
-      price,
-      costPrice,
+      price: price || 0,
+      costPrice: costPrice || 0,
       stock: stock || 0,
       lowStockThreshold: lowStockThreshold || 5,
       unit: unit || "piece",
       image: image || "",
-      // category is optional now; frontend may omit it
       category: category || null,
       createdBy: req.user._id,
     });
@@ -155,8 +154,14 @@ const deleteProduct = async (req, res) => {
       });
     }
 
-    product.isActive = false;
-    await product.save();
+    // Use direct update to bypass Mongoose instance validations which might block 
+    // saves on legacy products missing new strict required fields like createdBy.
+    // Scramble SKU with deletion timestamp so user can reuse exact original SKU on new products
+    const revokedSku = `${product.sku}_DELETED_${Date.now()}`;
+    await Product.findByIdAndUpdate(product._id, { 
+      isActive: false, 
+      sku: revokedSku 
+    });
 
     res.status(200).json({
       success: true,

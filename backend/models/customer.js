@@ -12,13 +12,14 @@ const customerSchema = new Schema(
       type: String,
       trim: true,
       unique: true,
+      sparse: true,
     },
     email: {
       type: String,
       trim: true,
       lowercase: true,
       unique: true,
-      default: "",
+      sparse: true,
     },
     address: {
       type: String,

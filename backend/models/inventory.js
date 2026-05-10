@@ -9,7 +9,7 @@ const inventoryLogSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["sale", "restock", "adjustment", "return"],
+    enum: ["sale", "restock", "adjustment", "return", "purchase"],
     required: true,
   },
   quantity: {

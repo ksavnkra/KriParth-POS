@@ -19,7 +19,33 @@ const generateInvoiceNumber = async () => {
 // POST /api/v1/sales
 const createSale = async (req, res) => {
   try {
-    const { items, discount, taxRate, paymentMode, paymentDetails, customer, notes } = req.body;
+    const { items, discount, taxRate, paymentMode, paymentDetails, customer, customerName, customerPhone, notes } = req.body;
+
+    let linkedCustomerId = customer || null;
+
+    // Lazy auto-create or lookup customer by phone
+    if (!linkedCustomerId && (customerName || customerPhone)) {
+      let existing = null;
+      if (customerPhone && customerPhone.trim().length > 0) {
+        existing = await Customer.findOne({ contact: customerPhone.trim() });
+      }
+      
+      if (existing) {
+        linkedCustomerId = existing._id;
+      } else {
+        // construct sparse object
+        const newPayload = { name: customerName?.trim() || "Walk-in Customer" };
+        if (customerPhone && customerPhone.trim().length > 0) newPayload.contact = customerPhone.trim();
+        
+        try {
+          const newCust = await Customer.create(newPayload);
+          linkedCustomerId = newCust._id;
+        } catch (err) {
+          console.log("Optional customer registration skipped/failed:", err.message);
+          // silent catch so sale continues regardless
+        }
+      }
+    }
 
     if (!items || items.length === 0) {
       return res.status(400).json({
@@ -75,8 +101,9 @@ const createSale = async (req, res) => {
 
     const billDiscount = discount || 0;
     const tax = taxRate || 0;
-    const taxAmount = ((subtotal - billDiscount) * tax) / 100;
-    const grandTotal = subtotal - billDiscount + taxAmount;
+    const grandTotal = subtotal - billDiscount;
+    const beforeTax = tax > 0 ? grandTotal / (1 + tax / 100) : grandTotal;
+    const taxAmount = grandTotal - beforeTax;
 
     const invoiceNumber = await generateInvoiceNumber();
 
@@ -90,7 +117,7 @@ const createSale = async (req, res) => {
       grandTotal,
       paymentMode,
       paymentDetails: paymentDetails || {},
-      customer: customer || null,
+      customer: linkedCustomerId,
       cashier: req.user._id,
       notes: notes || "",
     });
@@ -115,8 +142,8 @@ const createSale = async (req, res) => {
     }
 
     // if customer is linked, update their total purchases
-    if (customer) {
-      await Customer.findByIdAndUpdate(customer, {
+    if (linkedCustomerId) {
+      await Customer.findByIdAndUpdate(linkedCustomerId, {
         $inc: { totalPurchases: grandTotal },
       });
     }
@@ -139,8 +166,15 @@ const getSales = async (req, res) => {
 
     if (startDate || endDate) {
       filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const ed = new Date(endDate);
+        // Set to absolute end of the selected day (23:59:59.999) to include current day items
+        ed.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = ed;
+      }
     }
 
     if (cashier) filter.cashier = cashier;

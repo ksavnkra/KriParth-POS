@@ -171,3 +171,139 @@
     gap: 10px;
   }
 }
+
+.top-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.top-item:last-child {
+  border-bottom: none;
+}
+
+.top-idx {
+  font-weight: 700;
+  color: #5cb8a5;
+  min-width: 24px;
+  font-size: 13px;
+}
+
+.top-pname {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.top-pqty {
+  font-size: 12px;
+  color: #888;
+}
+
+.top-prev {
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 70px;
+  text-align: right;
+}
+
+.panel-empty span {
+  color: #999;
+}
+
+.empty-panel-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+/* Print Specific Optimization Styles */
+@page {
+  margin: 0; /* Removes browser header/footer text natively! */
+}
+
+@media print {
+  /* Prevent any element from sizing calculations overflowing its parent boundaries */
+  *, *:before, *:after {
+    box-sizing: border-box !important;
+  }
+
+  /* Create our own inner document margin since we disabled page margins above */
+  body {
+    padding: 20mm 25mm !important; /* Enhanced left/right safe gutters for print */
+  }
+
+  .sidebar, 
+  .sidebar-container,
+  .topbar,
+  .top-bar,
+  .app-sidebar,
+  .date-bar,
+  .page-header,
+  .print-hide,
+  button {
+    display: none !important;
+  }
+  
+  /* Reset ALL recursive layouts and assign solitary absolute control padding */
+  body, html, #root, .app-layout, .main-content, 
+  .page-container, .tbl-scroll, .page-content {
+    margin: 0 !important;
+    padding: 0 !important; /* Absolute reset to stop recursion */
+    width: 100% !important;
+    background: white !important;
+    overflow: visible !important;
+    height: auto !important;
+    position: static !important;
+    display: block !important; /* Flat structure */
+  }
+
+  /* ONE SOLID SINGLE POINT OF CONTROL FOR SPACING */
+  .main-content {
+    padding-left: 15mm !important; /* Perfectly balanced half-setting */
+    padding-right: 15mm !important;
+    padding-top: 15mm !important;
+    padding-bottom: 15mm !important;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+    margin-bottom: 25px !important;
+  }
+
+  /* Inject a visual header block ONLY visible on paper */
+  .page-content::before {
+    content: "KriParth POS System Report";
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  /* Keep containers stable without shadows */
+  .box-container, .kpi-card {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    page-break-inside: avoid;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

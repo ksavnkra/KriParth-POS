@@ -25,13 +25,13 @@ const productSchema = new Schema(
 
     price: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
 
     costPrice: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
 
@@ -49,8 +49,8 @@ const productSchema = new Schema(
 
     unit: {
       type: String,
-      enum: ["piece", "kg", "liter", "pack"],
       default: "piece",
+      trim: true,
     },
 
     image: {

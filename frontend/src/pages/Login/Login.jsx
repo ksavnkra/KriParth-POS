@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import FloatingLines from "../../components/FloatingLines/FloatingLines";
+import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
 
 const BG_GRADIENT = ["#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4"];
@@ -11,11 +12,23 @@ const BG_LINE_DISTANCE = [4, 3, 5];
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // redirect when auth state becomes true
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated]);
+
+  // Note: If you'd like a friendlier UX for unexpected runtime errors in routes,
+  // consider adding an `errorElement` to your route or a top-level ErrorBoundary
+  // in your router so users see a graceful message instead of the Vite overlay.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,11 +40,14 @@ export default function Login() {
     }
 
     setLoading(true);
+    const result = await login(email, password);
+    setLoading(false);
 
-    setTimeout(() => {
-      setLoading(false);
+    if (result.success) {
       navigate("/dashboard");
-    }, 1500);
+    } else {
+      setError(result.message);
+    }
   };
 
   return (

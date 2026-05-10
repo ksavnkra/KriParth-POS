@@ -22,7 +22,7 @@ const getExpenses = async (req, res) => {
 // POST /api/v1/expenses
 const createExpense = async (req, res) => {
   try {
-    const { name, amount, method, note, date } = req.body;
+    const { name, amount, method, note, date, category } = req.body;
     if (!name || !amount) {
       return res.status(400).json({ success: false, error: { message: "Name and amount are required." } });
     }
@@ -32,6 +32,7 @@ const createExpense = async (req, res) => {
       amount,
       method: method || "cash",
       note: note || "",
+      category: category || "Uncategorized",
       date: date || Date.now(),
       incurredBy: (req.user && req.user._id) ? req.user._id : null,
     });
@@ -45,52 +46,19 @@ const createExpense = async (req, res) => {
 // DELETE /api/v1/expenses/:id
 const deleteExpense = async (req, res) => {
   try {
-    const fs = require('fs');
     const id = req.params.id;
-    try { fs.appendFileSync('/tmp/krp_expense_debug.log', `delete called by ${req.user?.email} id: ${id}\n`); } catch (e) {}
-    console.log("deleteExpense called by", req.user?.email, "id:", id);
     if (!id) return res.status(400).json({ success: false, error: { message: "Expense id is required." } });
-    // validate ObjectId if mongoose available
-    try {
-      const mongoose = require('mongoose');
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ success: false, error: { message: "Invalid expense id." } });
-      }
-    } catch (e) {
-      // ignore if mongoose not available (shouldn't happen)
-    }
 
-    // try to find the expense first
     const existing = await Expense.findById(id);
-    try { fs.appendFileSync('/tmp/krp_expense_debug.log', `found existing: ${!!existing}\n`); } catch (e) {}
     if (!existing) {
-      try { fs.appendFileSync('/tmp/krp_expense_debug.log', `not found -> returning 404\n`); } catch (e) {}
       return res.status(404).json({ success: false, error: { message: "Expense not found or already deleted." } });
     }
 
-    let result;
-    try {
-      result = await Expense.deleteOne({ _id: id });
-      try { fs.appendFileSync('/tmp/krp_expense_debug.log', `deleteOne result: ${JSON.stringify(result)}\n`); } catch (e) {}
-    } catch (e) {
-      try { fs.appendFileSync('/tmp/krp_expense_debug.log', `deleteOne threw: ${e.stack || e}\n`); } catch (ee) {}
-      console.error('Expense deleteOne threw', e);
-      return res.status(500).json({ success: false, error: { message: e.message || 'Failed to delete expense.' } });
-    }
-
-    if (!result || result.deletedCount !== 1) {
-      console.error('Expense delete returned unexpected result', result);
-      try { fs.appendFileSync('/tmp/krp_expense_debug.log', `unexpected result: ${JSON.stringify(result)}\n`); } catch (e) {}
-      return res.status(500).json({ success: false, error: { message: 'Failed to delete expense (DB returned unexpected result).' } });
-    }
+    await Expense.deleteOne({ _id: id });
     res.status(200).json({ success: true, data: { message: "Expense deleted." } });
   } catch (err) {
-    try { require('fs').appendFileSync('/tmp/krp_expense_debug.log', `catch err: ${err.stack || err}\n`); } catch (e) {}
-    console.error("Delete expense error:", err.stack || err);
-    // return stack in development for easier debugging
-    const resp = { success: false, error: { message: err.message || "Failed to delete expense." } };
-    if (process.env.NODE_ENV !== 'production') resp.error.stack = err.stack;
-    res.status(500).json(resp);
+    console.error("Delete expense error:", err.message);
+    res.status(500).json({ success: false, error: { message: "Failed to delete expense." } });
   }
 };
 

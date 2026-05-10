@@ -1,8 +1,8 @@
 import "./KPICard.css";
 
-export default function KPICard({ label, value, icon, iconBg }) {
+export default function KPICard({ label, value, icon, iconBg, className }) {
   return (
-    <div className="stat-card">
+    <div className={`stat-card ${className || ""}`}>
       {icon && (
         <div
           className="stat-icon"

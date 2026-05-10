@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import POS from "./pages/POS/POS.jsx";
@@ -15,6 +17,9 @@ import Products from "./pages/Products/Products.jsx";
 import Expenses from "./pages/Expenses/Expenses.jsx";
 import Reports from "./pages/Reports/Reports.jsx";
 import Login from "./pages/Login/Login.jsx";
+import Signup from "./pages/Signup/Signup.jsx";
+import Users from "./pages/Users/Users.jsx";
+import Categories from "./pages/Categories/Categories.jsx";
 
 const router = createBrowserRouter([
   {
@@ -23,14 +28,21 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <App />,
+    element: (
+      <ProtectedRoute>
+        <App />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "pos", element: <POS /> },
       { path: "stock", element: <Stock /> },
       { path: "products", element: <Products /> },
+      { path: "categories", element: <Categories /> },
       { path: "expenses", element: <Expenses /> },
+        { path: "signup", element: <Signup /> },
+    { path: "users", element: <Users /> },
       { path: "reports", element: <Reports /> },
     ],
   },
@@ -38,6 +50,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 );

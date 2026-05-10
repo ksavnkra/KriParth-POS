@@ -1,0 +1,30 @@
+/* Minimal styles for Users page */
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+}
+.user-name {
+  font-weight: 600;
+}
+.user-meta {
+  color: #666;
+  font-size: 13px;
+}
+.btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+.btn-danger { background: #ffe6e6; color: #a00; }
+.btn-add { background: #e6f7ff; color: #0077b6; }

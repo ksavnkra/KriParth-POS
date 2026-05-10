@@ -28,8 +28,17 @@ const createCategory = async (req, res) => {
       });
     }
 
-    const existing = await Category.findOne({ name: { $regex: `^${name}$`, $options: "i" } });
+    const existing = await Category.findOne({ name: { $regex: `^${name.trim()}$`, $options: "i" } });
+    
     if (existing) {
+      if (!existing.isActive) {
+        // Silently reactivate the old category rather than blocking the user.
+        existing.isActive = true;
+        if (description !== undefined) existing.description = description;
+        await existing.save();
+        return res.status(200).json({ success: true, data: existing, message: "Existing category reactivated." });
+      }
+      
       return res.status(409).json({
         success: false,
         error: { code: "DUPLICATE_CATEGORY", message: "Category with this name already exists." },
