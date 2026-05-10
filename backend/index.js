@@ -22,8 +22,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Rate limiter: allow overriding with RATE_LIMIT_MAX env var. Use higher defaults
-// for development to avoid hitting the limiter during local testing.
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: Number(process.env.RATE_LIMIT_MAX) || (process.env.NODE_ENV === 'production' ? 1000 : 10000),

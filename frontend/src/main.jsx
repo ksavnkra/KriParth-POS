@@ -19,6 +19,7 @@ import Reports from "./pages/Reports/Reports.jsx";
 import Login from "./pages/Login/Login.jsx";
 import Signup from "./pages/Signup/Signup.jsx";
 import Users from "./pages/Users/Users.jsx";
+import Admin from "./pages/Admin/Admin.jsx";
 import Categories from "./pages/Categories/Categories.jsx";
 
 const router = createBrowserRouter([
@@ -41,8 +42,9 @@ const router = createBrowserRouter([
       { path: "products", element: <Products /> },
       { path: "categories", element: <Categories /> },
       { path: "expenses", element: <Expenses /> },
-        { path: "signup", element: <Signup /> },
-    { path: "users", element: <Users /> },
+      { path: "signup", element: <Signup /> },
+      { path: "users", element: <Users /> },
+      { path: "admin", element: <Admin /> },
       { path: "reports", element: <Reports /> },
     ],
   },

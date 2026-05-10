@@ -80,6 +80,12 @@ a.sideBarMenuItem:hover {
   cursor: pointer;
 }
 
+.sidebar-user.admin-clickable:hover {
+  background-color: rgb(20, 18, 18, 0.15);
+  color: rgb(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
 a.sideBarMenuItem {
   text-decoration: none;
 }

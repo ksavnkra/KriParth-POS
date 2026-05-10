@@ -248,18 +248,6 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-
-        <Box title="✨ Smart Insights" subtitle="Driven by Grok Intelligence">
-          <div className="insight-card">
-            <div className="insight-icon-wrap">💡</div>
-            <div className="insight-content">
-              <span className="insight-title">Grok Integration Coming Soon</span>
-              <span className="insight-desc">
-                Connect your account to activate deeply optimized forecasting, customer sentiment tracking, and anomaly detection powered entirely by real-time intelligence.
-              </span>
-            </div>
-          </div>
-        </Box>
       </div>
     </div>
   );

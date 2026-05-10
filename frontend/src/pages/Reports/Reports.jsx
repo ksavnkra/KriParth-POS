@@ -23,6 +23,8 @@ export default function Reports() {
   const [cashierData, setCashierData] = useState([]);
   const [dailyChartData, setDailyChartData] = useState([]);
   const [stockLogs, setStockLogs] = useState([]);
+  const [aiInsights, setAiInsights] = useState("");
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   useEffect(() => {
     fetchReportData();
@@ -35,25 +37,43 @@ export default function Reports() {
         API.get("/reports/sales", { params }).catch((e) => { console.error('sales report error', e); return null; }),
           API.get("/reports/revenue", { params }).catch((e) => { console.error('revenue report error', e); return null; }),
           API.get("/reports/products/top", { params: { ...params, limit: 5 } }).catch((e) => { console.error('top products error', e); return null; }),
-          // pass date params to sales listing too so Recent Sales respects date range
           API.get("/sales", { params: { ...params, limit: 10 } }).catch((e) => { console.error('sales list error', e); return null; }),
           API.get("/reports/cashier-performance", { params }).catch((e) => { console.error('cashier perf error', e); return null; }),
           API.get("/inventory/logs", { params: { ...params, limit: 100 } }).catch((e) => { console.error('inventory logs error', e); return null; }),
       ]);
 
-      if (salesRes?.data?.data?.summary) setSummary(salesRes.data.data.summary);
-      if (revenueRes?.data?.data) setProfit(revenueRes.data.data.profit || {});
-      if (topRes?.data?.data) setTopProducts(topRes.data.data);
-      if (salesListRes?.data?.data) setRecentSales(salesListRes.data.data);
-      if (cashierRes?.data?.data) setCashierData(cashierRes.data.data);
+      let updatedSummary = summary;
+      let updatedProfit = profit;
+      let updatedTopProducts = topProducts;
+      let updatedRecentSales = recentSales;
+      let updatedCashierData = cashierData;
+
+      if (salesRes?.data?.data?.summary) {
+        updatedSummary = salesRes.data.data.summary;
+        setSummary(updatedSummary);
+      }
+      if (revenueRes?.data?.data) {
+        updatedProfit = revenueRes.data.data.profit || {};
+        setProfit(updatedProfit);
+      }
+      if (topRes?.data?.data) {
+        updatedTopProducts = topRes.data.data;
+        setTopProducts(updatedTopProducts);
+      }
+      if (salesListRes?.data?.data) {
+        updatedRecentSales = salesListRes.data.data;
+        setRecentSales(updatedRecentSales);
+      }
+      if (cashierRes?.data?.data) {
+        updatedCashierData = cashierRes.data.data;
+        setCashierData(updatedCashierData);
+      }
       if (logsRes?.data?.data) setStockLogs(logsRes.data.data);
 
-      // Process charting integration just like dashboard
       if (revenueRes?.data?.data) {
         const revData = revenueRes.data.data.revenue || [];
         const expData = revenueRes.data.data.expenses || [];
         
-        // Dynamic dynamic date unifying mapper
         const lookup = {};
         
         revData.forEach(r => {
@@ -76,18 +96,50 @@ export default function Reports() {
               fullDate: isNaN(dateObj) ? d.date : `${day}/${month}/${year}`
             };
           })
-          .sort((a, b) => a.date.localeCompare(b.date)); // ascending left-to-right
+          .sort((a, b) => a.date.localeCompare(b.date));
         
         setDailyChartData(combined);
       }
+
+      await generateAIInsights({
+        summary: updatedSummary,
+        profit: updatedProfit,
+        topProducts: updatedTopProducts,
+        recentSales: updatedRecentSales,
+        cashierData: updatedCashierData
+      });
     } catch (err) {
       console.error("Report fetch error:", err);
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!fromDate || !toDate) return alert("Please select both From and To dates");
-    fetchReportData();
+    await fetchReportData();
+  };
+
+  const generateAIInsights = async (data) => {
+    try {
+      setLoadingInsights(true);
+      const reportData = {
+        dateRange: { from: fromDate, to: toDate },
+        summary: data.summary || summary,
+        profit: data.profit || profit,
+        topProducts: data.topProducts || topProducts,
+        cashierPerformance: data.cashierData || cashierData,
+        recentSales: (data.recentSales || recentSales).slice(0, 5),
+      };
+
+      const response = await API.post("/ai/report-insights", { reportData });
+      if (response.data?.data?.insights) {
+        setAiInsights(response.data.data.insights);
+      }
+    } catch (err) {
+      console.error("Failed to generate AI insights:", err);
+      setAiInsights("Unable to generate AI insights. Please check your API configuration.");
+    } finally {
+      setLoadingInsights(false);
+    }
   };
 
   const adjustmentLogs = stockLogs.filter(l => ["adjustment", "restock", "return"].includes(l.type));
@@ -195,7 +247,6 @@ export default function Reports() {
           </Box>
         </div>
 
-        {/* Print-Only Detailed Daily Record Table */}
         <div className="print-only">
           <Box title="Detailed Daily Records" subtitle={`Daily financial breakdown from ${new Date(fromDate).toLocaleDateString('en-GB')} to ${new Date(toDate).toLocaleDateString('en-GB')}`}>
             <div className="tbl-scroll">
@@ -227,7 +278,6 @@ export default function Reports() {
           </Box>
         </div>
 
-        {/* Print-Only Inventory Adjustments Record */}
         <div className="print-only" style={{ marginTop: '20px' }}>
           <Box title="Stock Adjustments Record" subtitle="Manual stock adjustments, restocks and returns during this period">
             <div className="tbl-scroll">
@@ -375,6 +425,34 @@ export default function Reports() {
               <p className="no-data">No performance data available yet</p>
             )}
           </Box>
+<br />
+          <div className="no-print">
+            <Box title="✨ Smart Insights" subtitle="Driven by Grok AI Intelligence">
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {loadingInsights ? (
+                  <div style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                    <p>Generating AI insights...</p>
+                  </div>
+                ) : aiInsights ? (
+                  <div style={{ 
+                    whiteSpace: "pre-wrap", 
+                    fontSize: "14px", 
+                    lineHeight: "1.6",
+                    backgroundColor: "#f8f9fa",
+                    padding: "16px",
+                    borderRadius: "8px",
+                    border: "1px solid #e8eaed"
+                  }}>
+                    {aiInsights}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                    <p>Generate a report to see AI insights.</p>
+                  </div>
+                )}
+              </div>
+            </Box>
+          </div>
         </div>
       </div>
     </div>

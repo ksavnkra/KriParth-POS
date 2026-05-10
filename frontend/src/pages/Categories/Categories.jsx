@@ -88,7 +88,6 @@ export default function Categories() {
           </button>
         </div>
 
-        {/* Elevated Lightbox Modal for Comprehensive Metadata Entry */}
         {showForm && (
           <div className="modal-overlay">
             <div className="modal-content" style={{ padding: '24px', maxWidth: '500px' }}>
@@ -142,7 +141,6 @@ export default function Categories() {
           </div>
         )}
 
-        {/* Table Structure reusing common styles */}
         <div className="table-card" style={{ background: 'white', borderRadius: '18px', border: '1px solid #f1f5f9', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <table className="tbl" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
@@ -201,7 +199,6 @@ export default function Categories() {
           </table>
         </div>
 
-        {/* Fully isolated custom confirm modal */}
         {deleteConfirmId && (
           <div className="modal-overlay" style={{ zIndex: 3000 }}>
             <div className="modal-content" style={{ maxWidth: '400px', padding: '25px', textAlign: 'center' }}>

@@ -203,10 +203,6 @@ const getRevenueReport = async (req, res) => {
 			{ $limit: 100 },
 		]);
 		
-		console.log("=== EXPENSE DEBUG ===");
-		console.log("EXPENSE MATCH FILTER:", JSON.stringify(expenseMatch));
-		console.log("DB AGGREGATE RESULT:", JSON.stringify(expenses, null, 2));
-		console.log("=====================");
 
 		// 1. Basic totals
 		const totalsAgg = await Sale.aggregate([

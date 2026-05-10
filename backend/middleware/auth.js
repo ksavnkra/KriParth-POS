@@ -1,14 +1,10 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-// verify JWT from Authorization header
 const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    // Development convenience: allow unauthenticated GET requests so the POS
-    // frontend can fetch product lists without a token. In production, ensure
-    // NODE_ENV is set and tighten this check as needed.
     if ((!authHeader || !authHeader.startsWith("Bearer ")) && req.method === "GET") {
       return next();
     }
@@ -20,9 +16,9 @@ const verifyToken = async (req, res, next) => {
       });
     }
 
-  const token = authHeader.split(" ")[1];
-  const jwtSecret = process.env.JWT_SECRET || "dev_jwt_secret_change_me";
-  const decoded = jwt.verify(token, jwtSecret);
+    const token = authHeader.split(" ")[1];
+    const jwtSecret = process.env.JWT_SECRET || "dev_jwt_secret_change_me";
+    const decoded = jwt.verify(token, jwtSecret);
 
     const user = await User.findById(decoded.id).select("-password");
     if (!user) {
@@ -55,7 +51,6 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-// role-based access — pass allowed roles as arguments
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

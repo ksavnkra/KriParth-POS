@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { queryAI, getInsights, getForecast, getAnomalies } = require("../controllers/ai");
+const { generateReportInsightsController, queryAI, getInsights, getForecast, getAnomalies } = require("../controllers/ai");
 const { verifyToken, authorize } = require("../middleware/auth");
 
-// all AI routes need at least manager access
+// AI routes for report insights (admin only for now)
+router.post("/report-insights", verifyToken, authorize("admin"), generateReportInsightsController);
+
+// all other AI routes need at least manager access
 router.post("/query", verifyToken, authorize("admin", "manager"), queryAI);
 router.get("/insights", verifyToken, authorize("admin", "manager"), getInsights);
 router.get("/forecast", verifyToken, authorize("admin"), getForecast);

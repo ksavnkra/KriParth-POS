@@ -94,7 +94,6 @@ export default function Stock() {
     setForm(next);
   };
 
-  // Formula derivations for Live Preview
   const fQty = Number(form.quantity) || 0;
   const fTotal = Number(form.totalPrice) || 0;
   const fRate = Number(form.gstPercentage) || 0;
@@ -156,7 +155,6 @@ export default function Stock() {
       <PageHeader title="Stock Management" />
       <div className="page-content">
         
-        {/* Modernized KPICard Metrics based on Summary Data */}
         <div className="kpi-grid">
           <KPICard 
             label="Total Purchases (Month)" 
@@ -184,7 +182,6 @@ export default function Stock() {
           />
         </div>
 
-        {/* Low Stock Alert banner (Preserved native UI component) */}
         {alerts.length > 0 && (
           <div className="low-stock-alert-box">
             <h3>⚠️ Low Stock Alerts</h3>
@@ -200,7 +197,6 @@ export default function Stock() {
           </div>
         )}
 
-        {/* Dynamic Seller Spotlight Summary Row */}
         {summary?.bySeller && Object.keys(summary.bySeller).length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '15px', marginBottom: '25px' }}>
             {Object.entries(summary.bySeller).slice(0, 4).map(([seller, data]) => (
@@ -230,7 +226,6 @@ export default function Stock() {
           </button>
         </div>
 
-        {/* Reference-ported Smart GST Add-Stock Form Modal */}
         {showForm && (
           <div className="modal-overlay">
             <div className="modal-content" style={{ padding: '24px' }}>
@@ -240,7 +235,6 @@ export default function Stock() {
               </div>
 
               <form className="product-form" onSubmit={handleSubmit}>
-                
                 <div className="form-group" style={{marginBottom: '20px'}}>
                   <label style={{fontSize: '13px', fontWeight: 600, color: '#475569'}}>Target Product *</label>
                   <select value={form.product} onChange={e => handleProductChange(e.target.value)} required style={{padding: '10px'}}>
@@ -249,7 +243,6 @@ export default function Stock() {
                   </select>
                 </div>
 
-                {/* Auto-calculating Logic Group */}
                 <div style={{background: '#f8fafc', padding: '15px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '20px'}}>
                   <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px'}}>
                     <span style={{fontSize: '13px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase'}}>Pricing Inputs (Enter any 2)</span>
@@ -271,7 +264,6 @@ export default function Stock() {
                   </div>
                 </div>
 
-                {/* Seller & Tax Layout */}
                 <div className="form-row" style={{gap: '20px'}}>
                   <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '12px'}}>
                     <div className="form-group">
@@ -316,10 +308,8 @@ export default function Stock() {
           </div>
         )}
 
-        {/* Hybrid List & Purchase History */}
         <div style={{display: 'grid', gridTemplateColumns: '1fr', gap: '25px'}}>
           
-          {/* Purchase History Ledger Table */}
           <div className="table-card">
             <div style={{padding: '15px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
               <h3 style={{fontSize: '15px', fontWeight: 600, margin: 0, color: '#0f172a'}}>Recent Purchase Ledger</h3>
@@ -370,7 +360,6 @@ export default function Stock() {
             </table>
           </div>
 
-          {/* Master Inventory Status Table */}
           <div className="table-card">
             <div style={{padding: '15px 20px', borderBottom: '1px solid #f1f5f9'}}>
               <h3 style={{fontSize: '15px', fontWeight: 600, margin: 0, color: '#0f172a'}}>Live Stock Inventory</h3>
@@ -410,7 +399,6 @@ export default function Stock() {
           </div>
         </div>
         
-        {/* Fully isolated custom confirm modal */}
         {deleteConfirmId && (
           <div className="modal-overlay" style={{ zIndex: 3000 }}>
             <div className="modal-content" style={{ maxWidth: '400px', padding: '25px', textAlign: 'center' }}>

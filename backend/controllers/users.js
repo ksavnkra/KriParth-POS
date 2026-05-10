@@ -18,8 +18,22 @@ const updateUser = async (req, res) => {
     const data = {};
     allowed.forEach(k => { if (updates[k] !== undefined) data[k] = updates[k]; });
 
+    // Get the user being updated to check their role
+    const targetUser = await User.findById(id);
+    if (!targetUser) return res.status(404).json({ success: false, error: { message: 'User not found' } });
+
+    // Prevent deactivating other admin accounts
+    if (data.isActive === false && targetUser.role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: "CANNOT_DEACTIVATE_ADMIN",
+          message: "Cannot deactivate admin accounts. Only admin account owners can manage their own account status."
+        }
+      });
+    }
+
     const user = await User.findByIdAndUpdate(id, data, { new: true }).select('-password');
-    if (!user) return res.status(404).json({ success: false, error: { message: 'User not found' } });
     res.status(200).json({ success: true, data: user });
   } catch (err) {
     console.error('Update user error:', err.message);

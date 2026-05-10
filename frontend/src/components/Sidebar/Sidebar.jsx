@@ -20,6 +20,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     navigate("/login");
   };
 
+  const handleAdminClick = () => {
+    if (user?.role === 'admin') {
+      navigate("/admin");
+      setIsOpen(false);
+    }
+  };
+
   return (
     <div className={`Sidebar ${isOpen ? "open" : ""}`}>
       <img
@@ -30,7 +37,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       />
       <hr className="line" />
 
-      {/* Role based menu */}
       {(user?.role === 'admin' || user?.role === 'manager') && (
         <Link to="/dashboard" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
           <img src={dashboardIcon} alt="dashboard-icon" className="icon" />
@@ -45,20 +51,28 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </Link>
       )}
 
-      {(user?.role === 'admin' || user?.role === 'manager') && (
+      {user?.role === 'admin' && (
         <>
-          <Link to="/stock" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-            <img src={stockIcon} alt="stock-icon" className="icon" />
-            <h2>Stock</h2>
-          </Link>
           <Link to="/products" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
             <img src={productsIcon} alt="products-icon" className="icon" />
             <h2>Products</h2>
           </Link>
           <Link to="/categories" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-            {/* Placeholder fallback until Category PNG asset added by user */}
-            <div className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', opacity: 0.9 }}>🏷️</div>
+            <img src={productsIcon} alt="categories-icon" className="icon" />
             <h2>Categories</h2>
+          </Link>
+          <Link to="/reports" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
+            <img src={reportsIcon} alt="reports-icon" className="icon" />
+            <h2>Reports</h2>
+          </Link>
+        </>
+      )}
+
+      {(user?.role === 'admin' || user?.role === 'manager') && (
+        <>
+          <Link to="/stock" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
+            <img src={stockIcon} alt="stock-icon" className="icon" />
+            <h2>Stock</h2>
           </Link>
           <Link to="/expenses" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
             <img src={expensesIcon} alt="expenses-icon" className="icon" />
@@ -67,23 +81,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </>
       )}
 
-      {(user?.role === 'admin' || user?.role === 'manager') && (
-        <Link to="/reports" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-          <img src={reportsIcon} alt="reports-icon" className="icon" />
-          <h2>Reports</h2>
-        </Link>
-      )}
-
-      {user?.role === 'admin' && (
-        <Link to="/signup" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-          <img src={userIcon} alt="user-icon" className="icon" />
-          <h2>Create User</h2>
-        </Link>
-      )}
-
       <hr className="line line-bottom" />
 
-      <div className="sideBarMenuItem sidebar-user">
+      <div 
+        className={`sideBarMenuItem sidebar-user ${user?.role === 'admin' ? 'admin-clickable' : ''}`}
+        onClick={handleAdminClick}
+        style={{ cursor: user?.role === 'admin' ? 'pointer' : 'default' }}
+      >
         <img src={userIcon} alt="user" className="icon" draggable="false" />
         <h3>{user?.name || "User"}</h3>
       </div>

@@ -79,7 +79,6 @@ export default function Expenses() {
   }, []);
 
   useEffect(() => {
-    // prevent background scroll when modal open
     document.body.style.overflow = showAdd ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [showAdd]);
@@ -87,7 +86,6 @@ export default function Expenses() {
   const fetchDashboard = async () => {
     try {
       const res = await API.get("/reports/dashboard");
-      // Fixed nested access path from data.expenses to data.stats.expenses
       const stats = res.data.data?.stats;
       setTodayTotal(stats?.expenses?.today || 0);
       setMonthTotal(stats?.expenses?.month || 0);
@@ -96,16 +94,13 @@ export default function Expenses() {
     }
 
     try {
-      // Fetch timeline data for the bar chart
       const revRes = await API.get("/reports/revenue");
       const rawExpenses = revRes.data.data?.expenses || [];
       
-      // 1. Generate EXACT same 7-day loop blueprint from Dashboard
       const lookup = {};
       for (let i = 6; i >= 0; i--) {
         const d = new Date();
         d.setDate(d.getDate() - i);
-        // Standard key generation matching backend group-by
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         
         const day = String(d.getDate()).padStart(2, '0');
@@ -119,14 +114,12 @@ export default function Expenses() {
         };
       }
 
-      // 2. Fill server data into initialized slots
       rawExpenses.forEach(exp => {
         if (lookup[exp._id]) {
           lookup[exp._id].amount = exp.total || 0;
         }
       });
 
-      // 3. Convert back to sorted array strictly left to right
       const finalChartData = Object.values(lookup).sort((a, b) => a.date.localeCompare(b.date));
       setDailyExpenses(finalChartData);
 
@@ -162,7 +155,6 @@ export default function Expenses() {
         setNewExpense({ name: "", amount: "", method: "cash", note: "", category: "" });
         fetchDashboard();
         fetchExpenses();
-        // keep modal open briefly to show success then close
         setTimeout(() => {
           setShowAdd(false);
           setAddSuccess("");
@@ -180,7 +172,6 @@ export default function Expenses() {
     }
   };
 
-  // Derived analytics: Calculate top category by spend dynamically from listing
   const topCategory = useMemo(() => {
     if (!expenses || expenses.length === 0) return "N/A";
     
@@ -198,16 +189,12 @@ export default function Expenses() {
         bestCat = cat;
       }
     }
-    // Return capitalization formatted cat
     return bestCat.length > 12 ? bestCat.substring(0, 12) + '...' : bestCat;
   }, [expenses]);
 
-  // Generate dynamic unique list of categories actually stored in state for filter select
   const availableCategories = useMemo(() => {
     const set = new Set();
-    // Defaults
     ["Supplies", "Food", "Salary", "Rent", "Utilities"].forEach(c => set.add(c));
-    // Dynamically add everything from actual data
     expenses.forEach(e => {
       if (e.category) set.add(e.category);
     });
