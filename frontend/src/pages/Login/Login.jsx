@@ -19,16 +19,12 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // redirect when auth state becomes true
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated]);
 
-  // Note: If you'd like a friendlier UX for unexpected runtime errors in routes,
-  // consider adding an `errorElement` to your route or a top-level ErrorBoundary
-  // in your router so users see a graceful message instead of the Vite overlay.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
