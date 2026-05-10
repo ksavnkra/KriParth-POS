@@ -8,21 +8,21 @@ const seedAdmin = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB");
 
-    const existing = await User.findOne({ email: "admin@kriparth.com" });
+    const existing = await User.findOne({ email: "Keshav@gmail.com" });
     if (existing) {
       console.log("Admin user already exists, skipping seed.");
       process.exit(0);
     }
 
     const salt = await bcrypt.genSalt(12);
-    const hashedPassword = await bcrypt.hash("admin123", salt);
+    const hashedPassword = await bcrypt.hash("Keshav@1006", salt);
 
     await User.create({
-      name: "Admin",
-      email: "admin@kriparth.com",
+      name: "Keshav",
+      email: "Keshav@gmail.com",
       password: hashedPassword,
       role: "admin",
-      contact: "9999999999",
+      contact: "9352565559",
     });
 
     console.log("Admin user created!");
