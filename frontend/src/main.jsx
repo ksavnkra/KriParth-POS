@@ -21,6 +21,7 @@ import Signup from "./pages/Signup/Signup.jsx";
 import Users from "./pages/Users/Users.jsx";
 import Admin from "./pages/Admin/Admin.jsx";
 import Categories from "./pages/Categories/Categories.jsx";
+import NotFound from "./pages/NotFound/NotFound.jsx";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       { path: "admin", element: <Admin /> },
       { path: "reports", element: <Reports /> },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

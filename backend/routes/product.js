@@ -4,8 +4,8 @@ const { getProducts, getProduct, createProduct, updateProduct, deleteProduct } =
 const { verifyToken, authorize } = require("../middleware/auth");
 const { requireAdmin } = require("../middleware/adminAuth");
 
-router.get("/", verifyToken, requireAdmin, getProducts);
-router.get("/:id", verifyToken, requireAdmin, getProduct);
+router.get("/", verifyToken, getProducts);
+router.get("/:id", verifyToken, getProduct);
 router.post("/", verifyToken, requireAdmin, createProduct);
 router.put("/:id", verifyToken, requireAdmin, updateProduct);
 router.delete("/:id", verifyToken, requireAdmin, deleteProduct);

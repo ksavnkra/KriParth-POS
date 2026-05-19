@@ -51,6 +51,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </Link>
       )}
 
+      {(user?.role === 'admin' || user?.role === 'manager') && (
+        <Link to="/stock" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
+          <img src={stockIcon} alt="stock-icon" className="icon" />
+          <h2>Stock</h2>
+        </Link>
+      )}
+
       {user?.role === 'admin' && (
         <>
           <Link to="/products" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
@@ -61,24 +68,21 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <img src={productsIcon} alt="categories-icon" className="icon" />
             <h2>Categories</h2>
           </Link>
-          <Link to="/reports" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-            <img src={reportsIcon} alt="reports-icon" className="icon" />
-            <h2>Reports</h2>
-          </Link>
         </>
       )}
 
       {(user?.role === 'admin' || user?.role === 'manager') && (
-        <>
-          <Link to="/stock" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-            <img src={stockIcon} alt="stock-icon" className="icon" />
-            <h2>Stock</h2>
-          </Link>
-          <Link to="/expenses" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
-            <img src={expensesIcon} alt="expenses-icon" className="icon" />
-            <h2>Expenses</h2>
-          </Link>
-        </>
+        <Link to="/expenses" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
+          <img src={expensesIcon} alt="expenses-icon" className="icon" />
+          <h2>Expenses</h2>
+        </Link>
+      )}
+
+      {user?.role === 'admin' && (
+        <Link to="/reports" className="sideBarMenuItem" onClick={() => setIsOpen(false)}>
+          <img src={reportsIcon} alt="reports-icon" className="icon" />
+          <h2>Reports</h2>
+        </Link>
       )}
 
       <hr className="line line-bottom" />

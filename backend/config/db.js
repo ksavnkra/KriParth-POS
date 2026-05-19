@@ -6,7 +6,6 @@ const connectDB = async () => {
     const conn = await mongoose.connect(uri);
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (err) {
-    // Log the error but don't exit - allow server to start for frontend dev even when DB is unreachable.
     console.error("DB connection failed:", err.message);
   }
 };

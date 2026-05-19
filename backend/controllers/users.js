@@ -18,17 +18,37 @@ const updateUser = async (req, res) => {
     const data = {};
     allowed.forEach(k => { if (updates[k] !== undefined) data[k] = updates[k]; });
 
-    // Get the user being updated to check their role
     const targetUser = await User.findById(id);
     if (!targetUser) return res.status(404).json({ success: false, error: { message: 'User not found' } });
 
-    // Prevent deactivating other admin accounts
     if (data.isActive === false && targetUser.role === 'admin') {
+      if (req.user._id.toString() !== id) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            code: "CANNOT_DEACTIVATE_OTHER_ADMIN",
+            message: "Cannot deactivate other admin accounts. Admins can only deactivate themselves."
+          }
+        });
+      }
+      const activeAdminCount = await User.countDocuments({ role: 'admin', isActive: true });
+      if (activeAdminCount <= 1) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            code: "LAST_ADMIN",
+            message: "Cannot deactivate — you are the only active admin. Promote another user first."
+          }
+        });
+      }
+    }
+
+    if (data.role && data.role !== targetUser.role && targetUser.role === 'admin') {
       return res.status(403).json({
         success: false,
         error: {
-          code: "CANNOT_DEACTIVATE_ADMIN",
-          message: "Cannot deactivate admin accounts. Only admin account owners can manage their own account status."
+          code: "CANNOT_CHANGE_ADMIN_ROLE",
+          message: "Cannot change the role of admin accounts."
         }
       });
     }

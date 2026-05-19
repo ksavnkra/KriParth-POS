@@ -23,10 +23,15 @@ app.use(express.json());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: Number(process.env.RATE_LIMIT_MAX) || (process.env.NODE_ENV === 'production' ? 1000 : 10000),
+  max:
+    Number(process.env.RATE_LIMIT_MAX) ||
+    (process.env.NODE_ENV === "production" ? 1000 : 10000),
   message: {
     success: false,
-    error: { code: "RATE_LIMIT", message: "Too many requests, try again later." },
+    error: {
+      code: "RATE_LIMIT",
+      message: "Too many requests, try again later.",
+    },
   },
 });
 app.use("/api/", limiter);
@@ -55,4 +60,8 @@ app.use((req, res) => {
 });
 
 connectDB();
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 module.exports = app;
