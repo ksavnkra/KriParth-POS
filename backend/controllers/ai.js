@@ -1,5 +1,5 @@
 const Sale = require("../models/invoice");
-const { generateReportInsights, generateRecommendations } = require("../services/grokAI");
+const { generateReportInsights, generateRecommendations } = require("../services/geminiAI");
 
 const generateReportInsightsController = async (req, res) => {
   try {

@@ -427,24 +427,26 @@ export default function Reports() {
           </Box>
 <br />
           <div className="no-print">
-            <Box title="✨ Smart Insights" subtitle="Driven by Grok AI Intelligence">
+            <Box title="✨ Smart Insights" subtitle="Driven by Google AI Intelligence">
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {loadingInsights ? (
                   <div style={{ textAlign: "center", padding: "20px", color: "#666" }}>
                     <p>Generating AI insights...</p>
                   </div>
                 ) : aiInsights ? (
-                  <div style={{ 
-                    whiteSpace: "pre-wrap", 
-                    fontSize: "14px", 
-                    lineHeight: "1.6",
-                    backgroundColor: "#f8f9fa",
-                    padding: "16px",
-                    borderRadius: "8px",
-                    border: "1px solid #e8eaed"
-                  }}>
-                    {aiInsights}
-                  </div>
+                  <div 
+                    className="ai-insights-container"
+                    style={{ 
+                      fontSize: "14px", 
+                      lineHeight: "1.6",
+                      backgroundColor: "#ffffff",
+                      padding: "24px",
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)"
+                    }}
+                    dangerouslySetInnerHTML={{ __html: aiInsights.replace(/```html|```/g, '') }}
+                  />
                 ) : (
                   <div style={{ textAlign: "center", padding: "20px", color: "#666" }}>
                     <p>Generate a report to see AI insights.</p>
