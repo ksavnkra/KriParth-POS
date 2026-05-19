@@ -3,10 +3,15 @@ const Product = require("../models/product");
 const InventoryLog = require("../models/inventory");
 const Customer = require("../models/customer");
 
-// helper to generate invoice number like INV-20260509-0001
+// helper to generate invoice number like INV-20260520-0001
 const generateInvoiceNumber = async () => {
   const today = new Date();
-  const dateStr = today.toISOString().slice(0, 10).replace(/-/g, "");
+  
+  // Format as YYYYMMDD using local time to match startOfDay query below
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const dateStr = `${yyyy}${mm}${dd}`;
 
   // find how many invoices were created today
   const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());

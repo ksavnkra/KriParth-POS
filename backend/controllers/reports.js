@@ -302,14 +302,20 @@ const getCashierPerformance = async (req, res) => {
 					avgOrderValue: { $avg: "$grandTotal" },
 				},
 			},
+			{
+				$lookup: {
+					from: "users",
+					localField: "_id",
+					foreignField: "_id",
+					as: "cashierInfo"
+				}
+			},
+			{ $unwind: { path: "$cashierInfo", preserveNullAndEmptyArrays: true } },
 			{ $sort: { totalRevenue: -1 } },
 		]);
 
-		// populate cashier names by mapping ids (fast path)
-		const populated = await Sale.populate(perf, { path: "_id", model: "User", select: "name" });
-
-		const result = populated.map((p) => ({
-			cashierName: p._id?.name || "Unknown",
+		const result = perf.map((p) => ({
+			cashierName: p.cashierInfo?.name || "Deleted User",
 			totalSales: p.totalSales || 0,
 			totalRevenue: p.totalRevenue || 0,
 			avgOrderValue: Math.round(p.avgOrderValue || 0),
