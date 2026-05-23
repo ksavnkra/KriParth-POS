@@ -20,7 +20,7 @@ const app = express();
 
 // CORS: allow your frontend Vercel domain in production
 const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL]
+  ? process.env.FRONTEND_URL.split(",").map((url) => url.trim())
   : ["http://localhost:5173"];
 
 app.use(
