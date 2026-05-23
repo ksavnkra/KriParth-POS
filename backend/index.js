@@ -18,7 +18,17 @@ const usersRoutes = require("./routes/users");
 
 const app = express();
 
-app.use(cors());
+// CORS: allow your frontend Vercel domain in production
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL]
+  : ["http://localhost:5173"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const limiter = rateLimit({
