@@ -46,7 +46,7 @@ const register = async (req, res) => {
     console.error("Register error:", err.message);
     res.status(500).json({
       success: false,
-      error: { code: "SERVER_ERROR", message: "Something went wrong during registration." },
+      error: { code: "SERVER_ERROR", message: err.message || "Something went wrong during registration." },
     });
   }
 };
@@ -112,7 +112,7 @@ const login = async (req, res) => {
     console.error("Login error:", err.message);
     res.status(500).json({
       success: false,
-      error: { code: "SERVER_ERROR", message: "Something went wrong during login." },
+      error: { code: "SERVER_ERROR", message: err.message || "Something went wrong during login." },
     });
   }
 };

@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import {
   Clock,
   Mesh,
@@ -245,6 +245,8 @@ export default memo(function FloatingLines({
   mixBlendMode = "screen",
 }) {
   const containerRef = useRef(null);
+  const webglFailedRef = useRef(false);
+  const [webglFailed, setWebglFailed] = useState(false);
   const targetMouseRef = useRef(new Vector2(-1000, -1000));
   const currentMouseRef = useRef(new Vector2(-1000, -1000));
   const targetInfluenceRef = useRef(0);
@@ -289,13 +291,22 @@ export default memo(function FloatingLines({
     if (!container) return;
 
     let active = true;
+    let renderer;
+
+    try {
+      renderer = new WebGLRenderer({ antialias: true, alpha: false });
+    } catch (e) {
+      console.warn("WebGL not available, using CSS fallback:", e.message);
+      webglFailedRef.current = true;
+      setWebglFailed(true);
+      return;
+    }
 
     const scene = new Scene();
 
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
     camera.position.z = 1;
 
-    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -507,6 +518,22 @@ export default memo(function FloatingLines({
     parallax,
     parallaxStrength,
   ]);
+
+  if (webglFailed) {
+    return (
+      <div
+        className="floating-lines-container"
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          background: "linear-gradient(135deg, #0a0a2e 0%, #1a0533 30%, #2f1b69 60%, #0a0a2e 100%)",
+          mixBlendMode: mixBlendMode,
+        }}
+      />
+    );
+  }
 
   return (
     <div
