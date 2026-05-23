@@ -44,6 +44,7 @@ const limiter = rateLimit({
     },
   },
 });
+
 app.use("/api/", limiter);
 
 app.use("/api/v1/auth", authRoutes);
