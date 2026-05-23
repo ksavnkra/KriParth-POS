@@ -94,9 +94,8 @@ const login = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
-    // update lastLogin
-    user.lastLogin = new Date();
-    await user.save();
+    // update lastLogin (bypass full validation for legacy users)
+    await User.updateOne({ _id: user._id }, { lastLogin: new Date() });
 
     const userObj = user.toObject();
     delete userObj.password;
